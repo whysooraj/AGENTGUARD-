@@ -46,7 +46,7 @@ def main():
         print(f"📱 Please open Mobile Guard to approve ID: {req_id}", flush=True)
 
         start_time = time.time()
-        while time.time() - start_time < 30:
+        while time.time() - start_time < 120:
             status_res = requests.get(f"{RELAY_URL}/api/v1/approval/wait/{req_id}")
             if status_res.ok:
                 st = status_res.json().get("status")
@@ -59,7 +59,7 @@ def main():
                     sys.exit(1)
             time.sleep(1)
 
-        print("⏰ [AgentGuard] Approval TIMEOUT (30s). Execution aborted.", flush=True)
+        print("⏰ [AgentGuard] Approval TIMEOUT (120s). Execution aborted.", flush=True)
         sys.exit(1)
     except Exception as e:
         print(f"❌ Interceptor error: {e}", flush=True)

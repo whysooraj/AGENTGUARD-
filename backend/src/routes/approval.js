@@ -13,6 +13,11 @@ router.post('/', (req, res) => {
     res.status(201).json(approval);
 });
 
+router.post('/clear', (req, res) => {
+    store.approvals.clear();
+    res.json({ status: 'cleared' });
+});
+
 router.get('/pending', (req, res) => {
     const pending = Array.from(store.approvals.values()).filter(a => a.status === 'PENDING');
     res.json(pending);
@@ -55,6 +60,11 @@ router.post('/:id/respond', (req, res) => {
     const { status } = req.body;
     const approval = store.updateApprovalStatus(id, status);
     res.json(approval || { status: 'ok' });
+});
+
+router.post('/reset', (req, res) => {
+    store.approvals.clear();
+    res.json({ status: 'cleared' });
 });
 
 module.exports = router;

@@ -416,8 +416,22 @@
   </div>
 
   <script>
-    // ponytail: fallback to current window location if localtunnel fails
-    const RELAY_ORIGIN = (window.location.origin && window.location.origin !== "null" && !window.location.origin.includes("file:")) ? window.location.origin : "http://localhost:3000";
+    // ponytail: ensure phone on port 8080 talks to backend API on port 3000
+    const getRelayOrigin = () => {
+      if (!window.location.origin || window.location.origin === "null" || window.location.origin.includes("file:")) {
+        return "http://localhost:3000";
+      }
+      // If hosted on local HTTP dev server (port 8080/5173/etc), target same host on port 3000
+      try {
+        const u = new URL(window.location.origin);
+        if (u.port && u.port !== "3000") {
+          u.port = "3000";
+          return u.origin;
+        }
+      } catch (e) {}
+      return window.location.origin;
+    };
+    const RELAY_ORIGIN = getRelayOrigin();
     let currentRequestId = null;
     let approvedCount = 0;
     let deniedCount = 0;
@@ -444,7 +458,7 @@
           document.getElementById("conn-status").innerText = "Relay Connected";
 
           if (requests && requests.length > 0) {
-            const req = requests[0];
+            const req = requests[requests.length - 1]; // ponytail: get latest pending request
             if (currentRequestId !== req.id) {
               displayRequest(req);
             }
