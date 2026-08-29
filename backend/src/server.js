@@ -5,8 +5,11 @@ const devicesRouter = require('./routes/devices');
 const approvalRouter = require('./routes/approval');
 const auditRouter = require('./routes/audit');
 
+const path = require('path');
+
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../../web-mobile')));
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -24,6 +27,7 @@ app.use('/audit', auditRouter);
 app.use('/api/v1/audit', auditRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../../web-mobile/index.html')));
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
